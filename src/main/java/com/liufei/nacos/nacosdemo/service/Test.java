@@ -12,6 +12,7 @@ import java.util.concurrent.Executor;
 
 /**
  * 参考文档：https://www.jianshu.com/p/38b5452c9fec
+ * https://www.jianshu.com/p/d2675fecbc5a
  */
 public class Test {
 
