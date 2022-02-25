@@ -27,6 +27,7 @@ public class Test {
         configService.addListener(dataId, group, new Listener() {
             @Override
             public Executor getExecutor() {
+                System.out.println("-----------");
                 return null;
             }
 
