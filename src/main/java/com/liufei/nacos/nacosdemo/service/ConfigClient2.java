@@ -15,12 +15,12 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 @Slf4j
-public class ConfigClient {
+public class ConfigClient2 {
 
     private CloseableHttpClient httpClient;
     private RequestConfig requestConfig;
 
-    public ConfigClient() {
+    public ConfigClient2() {
         this.httpClient = HttpClientBuilder.create().build();
         // ① httpClient 客户端超时时间要大于长轮询约定的超时时间
         this.requestConfig = RequestConfig.custom().setSocketTimeout(40000).build();
@@ -67,7 +67,7 @@ public class ConfigClient {
         logger.setLevel(Level.INFO);
         logger.setAdditive(false);
 
-        ConfigClient configClient = new ConfigClient();
+        ConfigClient2 configClient = new ConfigClient2();
         // ③ 对 dataId: user 进行配置监听 
         configClient.longPolling("http://127.0.0.1:8080/listener", "user");
     }

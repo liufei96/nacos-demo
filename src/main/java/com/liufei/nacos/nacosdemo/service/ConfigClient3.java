@@ -2,6 +2,7 @@ package com.liufei.nacos.nacosdemo.service;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
+import com.liufei.nacos.nacosdemo.config.HttpClient;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.config.RequestConfig;
@@ -9,28 +10,32 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+import javax.net.ssl.SSLContext;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 @Slf4j
-public class ConfigClient {
+@Service
+public class ConfigClient3 {
 
-    private CloseableHttpClient httpClient;
-    private RequestConfig requestConfig;
-
-    public ConfigClient() {
-        this.httpClient = HttpClientBuilder.create().build();
-        // ① httpClient 客户端超时时间要大于长轮询约定的超时时间
-        this.requestConfig = RequestConfig.custom().setSocketTimeout(40000).build();
-    }
+    @Resource
+    private HttpClient httpClient;
 
     @SneakyThrows
     public void longPolling(String url, String dataId) {
         String endpoint = url + "?dataId=" + dataId;
         HttpGet request = new HttpGet(endpoint);
-        CloseableHttpResponse response = httpClient.execute(request);
+
+        SSLContext sslcontext = httpClient.getSslcontext();
+        PoolingHttpClientConnectionManager httpClientConnectionManager = httpClient.getHttpClientConnectionManager(sslcontext);
+        HttpClientBuilder httpClientBuilder = httpClient.getHttpClientBuilder(httpClientConnectionManager);
+        CloseableHttpClient closeableHttpClient = httpClient.getCloseableHttpClient(httpClientBuilder);
+        CloseableHttpResponse response = closeableHttpClient.execute(request);
         switch (response.getStatusLine().getStatusCode()) {
             case 200: {
                 BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity()
@@ -67,9 +72,8 @@ public class ConfigClient {
         logger.setLevel(Level.INFO);
         logger.setAdditive(false);
 
-        ConfigClient configClient = new ConfigClient();
+        ConfigClient3 configClient = new ConfigClient3();
         // ③ 对 dataId: user 进行配置监听 
         configClient.longPolling("http://127.0.0.1:8080/listener", "user");
     }
-
 }

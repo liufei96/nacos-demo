@@ -1,4 +1,4 @@
-package com.liufei.nacos.nacosdemo.service;
+package com.liufei.nacos.nacosdemo;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -6,6 +6,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.liufei.nacos.nacosdemo.service.ConfigClient3;
 import io.undertow.servlet.spec.HttpServletRequestImpl;
 import lombok.Data;
 import lombok.SneakyThrows;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import javax.servlet.AsyncContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,7 +33,6 @@ import java.util.concurrent.TimeUnit;
 
 @RestController
 @Slf4j
-@ComponentScan(basePackages = {"com.liufei.nacos.nacosdemo"})
 @SpringBootApplication
 public class ConfigServer implements WebServerFactoryCustomizer<UndertowServletWebServerFactory> {
 
@@ -103,18 +104,24 @@ public class ConfigServer implements WebServerFactoryCustomizer<UndertowServletW
     }
 
 
+    @Resource
+    private ConfigClient3 configClient;
+
+
     // 配置发布接入点
     @GetMapping("/client")
-    @SneakyThrows
     public void openClient(HttpServletRequest request) {
         // httpClient 会打印很多 debug 日志，关闭掉
-        Logger logger = (Logger) LoggerFactory.getLogger("org.apache.http");
-        logger.setLevel(Level.INFO);
-        logger.setAdditive(false);
+        try {
+            Logger logger = (Logger) LoggerFactory.getLogger("org.apache.http");
+            logger.setLevel(Level.INFO);
+            logger.setAdditive(false);
 
-        ConfigClient3 configClient = new ConfigClient3();
-        // ③ 对 dataId: user 进行配置监听
-        configClient.longPolling("http://127.0.0.1:8080/listener", "user");
+            // ③ 对 dataId: user 进行配置监听
+            configClient.longPolling("https://127.0.0.1:8443/listener", "user");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static void main(String[] args) {
