@@ -1,5 +1,5 @@
 server:
-  port: 8443 # 端口
+  port: 8444 # 端口
   compression:
     enabled: true
   http2:
