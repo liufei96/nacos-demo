@@ -1,8 +1,9 @@
-package com.liufei.nacos.nacosdemo.servlet;
+package com.liufei.nacos.controller;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -11,8 +12,9 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-@WebServlet(urlPatterns = "/long-polling")
-public class LongPollingServlet extends HttpServlet {
+@RestController
+@RequestMapping("/long-polling")
+public class LongPollingController {
 
     private final Random random = new Random();
 
@@ -20,8 +22,8 @@ public class LongPollingServlet extends HttpServlet {
 
     private final AtomicLong value = new AtomicLong();
 
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    @GetMapping
+    public void test(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         System.out.println();
         final long currentSequence = sequence.incrementAndGet();
         System.out.println("第" + (currentSequence) + "次 longpolling");
@@ -38,7 +40,7 @@ public class LongPollingServlet extends HttpServlet {
         //    }
         // }
 
-        int sleepSecends = random.nextInt(100);
+        int sleepSecends = random.nextInt(30);
 
         System.out.println(currentSequence + " wait " + sleepSecends + " second");
 
@@ -54,7 +56,9 @@ public class LongPollingServlet extends HttpServlet {
         out.flush();
     }
 
-    public static void main(String[] args) {
-        new LongPollingServlet();
+
+    @GetMapping("/ping")
+    public String ping() {
+       return "ok";
     }
 }

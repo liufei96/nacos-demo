@@ -1,4 +1,4 @@
-package com.liufei.nacos.nacosdemo;
+package com.liufei.nacos.service;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -6,7 +6,6 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.liufei.nacos.nacosdemo.service.ConfigClient3;
 import io.undertow.servlet.spec.HttpServletRequestImpl;
 import lombok.Data;
 import lombok.SneakyThrows;
@@ -16,11 +15,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
 import javax.servlet.AsyncContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -32,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 @RestController
 @Slf4j
+@ComponentScan(basePackages = {"com.liufei.nacos.nacosdemo"})
 @SpringBootApplication
 public class ConfigServer implements WebServerFactoryCustomizer<UndertowServletWebServerFactory> {
 
@@ -103,24 +103,18 @@ public class ConfigServer implements WebServerFactoryCustomizer<UndertowServletW
     }
 
 
-    @Resource
-    private ConfigClient3 configClient;
-
-
     // 配置发布接入点
     @GetMapping("/client")
+    @SneakyThrows
     public void openClient(HttpServletRequest request) {
         // httpClient 会打印很多 debug 日志，关闭掉
-        try {
-            Logger logger = (Logger) LoggerFactory.getLogger("org.apache.http");
-            logger.setLevel(Level.INFO);
-            logger.setAdditive(false);
+        Logger logger = (Logger) LoggerFactory.getLogger("org.apache.http");
+        logger.setLevel(Level.INFO);
+        logger.setAdditive(false);
 
-            // ③ 对 dataId: user 进行配置监听
-            configClient.longPolling("https://127.0.0.1:8443/listener", "user");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        ConfigClient3 configClient = new ConfigClient3();
+        // ③ 对 dataId: user 进行配置监听
+        configClient.longPolling("http://127.0.0.1:8080/listener", "user");
     }
 
     public static void main(String[] args) {
@@ -131,7 +125,7 @@ public class ConfigServer implements WebServerFactoryCustomizer<UndertowServletW
     @Override
     public void customize(UndertowServletWebServerFactory factory) {
         factory.addBuilderCustomizers(builder -> {
-            builder.addHttpListener(8081, "0.0.0.0");
+            builder.addHttpListener(8080, "0.0.0.0");
         });
     }
 }

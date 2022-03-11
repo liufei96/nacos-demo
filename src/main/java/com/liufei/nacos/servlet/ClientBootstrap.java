@@ -1,4 +1,4 @@
-package com.liufei.nacos.nacosdemo.servlet;
+package com.liufei.nacos.servlet;
 
 import java.io.IOException;
 

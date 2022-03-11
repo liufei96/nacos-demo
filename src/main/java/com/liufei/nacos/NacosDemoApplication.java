@@ -1,4 +1,4 @@
-package com.liufei.nacos.nacosdemo;
+package com.liufei.nacos;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

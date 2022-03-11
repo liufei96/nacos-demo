@@ -1,4 +1,4 @@
-package com.liufei.nacos.nacosdemo.service;
+package com.liufei.nacos.service;
 
 import com.alibaba.nacos.api.NacosFactory;
 import com.alibaba.nacos.api.config.ConfigService;

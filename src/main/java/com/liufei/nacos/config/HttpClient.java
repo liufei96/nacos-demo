@@ -1,4 +1,4 @@
-package com.liufei.nacos.nacosdemo.config;
+package com.liufei.nacos.config;
 
 import lombok.Data;
 import org.apache.http.client.config.RequestConfig;

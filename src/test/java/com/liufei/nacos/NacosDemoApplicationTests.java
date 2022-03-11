@@ -1,4 +1,4 @@
-package com.liufei.nacos.nacosdemo;
+package com.liufei.nacos;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
